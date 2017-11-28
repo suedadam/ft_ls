@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:09:30 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/28 01:41:24 by asyed            ###   ########.fr       */
+/*   Updated: 2017/11/28 02:59:08 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,40 +24,41 @@
 ** 
 */
 
-typedef struct	s_info
+void	print_options(t_info *file_info)
 {
-	struct stat		*stats;
-}				t_info;
+	printf("======== Options ========\n");
+	printf("all = %d\nlonglist = %d\nreverse = %d\nrecursive = %d\nmodtime = %d\n", file_info->all, file_info->longlist, file_info->reverse, file_info->recursive,file_info->modtime);
+	printf("======== End ========\n");
+}
 
-t_info	*fetch_info(struct dirent *dir_info)
+
+struct s_parse_options options[] = {
+	{'r', &reverse},
+	{'R', &recursive},
+	{'l', &longlist},
+	{'t', &modtime},
+	{'a', &all}
+};
+
+int		fetch_info(struct dirent *dir_info, t_info *file_info)
 {
 	struct stat		*stbuf;
-	struct s_info	*file_info;
-
 
 	stbuf = (struct stat *)ft_memalloc(sizeof(struct stat));
 	if (!stbuf)
 	{
 		//Set errno;
 		printf("Failed to malloc(stbuf) = \"%s\"\n", strerror(errno));
-		return (NULL);
-	}
-	file_info = (t_info *)ft_memalloc(sizeof(t_info));
-	if (!stbuf)
-	{
-		//Set errno;
-		printf("Failed to malloc(file_info) = \"%s\"\n", strerror(errno));
-		return (NULL);
+		return (0);
 	}
 	lstat(dir_info->d_name, stbuf);
 	file_info->stats = stbuf;
-	return (file_info);
+	return (1);
 }
 
-int		ft_ls(void)
+int		ft_ls(t_info *file_info)
 {
 	struct dirent	*dir_info;
-	struct s_info	*file_info;
 	DIR				*FD;
 
 	if (!(FD = opendir("./")))
@@ -65,9 +66,10 @@ int		ft_ls(void)
 		printf("Error! %s", strerror(errno));
 		return (-1);
 	}
+	print_options(file_info);
 	while ((dir_info = readdir(FD)))
 	{
-		if (!(file_info = fetch_info(dir_info)))
+		if (!fetch_info(dir_info, file_info))
 		{
 			//Set errno accordingly.
 			printf("Failed to fetch file's info\n");
@@ -82,10 +84,55 @@ int		ft_ls(void)
 	return (1);
 }
 
+int		itterate_search(t_info *file_info, char *str)
+{
+	int	i;
+	int ret;
+
+	i = 0;
+	ret = 0;
+	while (options[i].flag)
+	{
+		if (*str == options[i].flag)
+		{
+			ret += options[i].func(file_info);
+			str++;
+		}
+		i++;
+	}
+	return (ret);
+}
+
+void	parse_options(char *argv[], int argc, t_info *file_info)
+{
+	char	*str;
+	int		i;
+
+	i = 1;
+	while (i < argc)
+	{
+		str = argv[i];
+		if (*str == '-')
+		{
+			str++;
+			itterate_search(file_info, str);
+		}
+		i++;
+	}
+}
+
 int		main(int argc, char *argv[])
 {
-	(void)argc;
-	(void)argv;
-	// parse_options()
-	return (ft_ls());
+	struct s_info	*file_info;
+
+	file_info = (t_info *)ft_memalloc(sizeof(t_info));
+	if (!file_info)
+	{
+		//Errno;
+		printf("Failed to malloc(file_info) = %s\n", strerror(errno));
+		return (-1);
+	}
+	// if (argc > 3)
+		parse_options(argv, argc, file_info);
+	return (ft_ls(file_info));
 }

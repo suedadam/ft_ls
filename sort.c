@@ -6,39 +6,86 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 22:58:00 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 02:09:24 by asyed            ###   ########.fr       */
+/*   Updated: 2017/11/30 14:06:25 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 #include <sys/stat.h>
 
+/*
+** Shitty swap, I should swap the links themselves. 
+*/
+void	swap_links(t_filelist *head, t_filelist *first, t_filelist *second)
+{
+	t_filelist *tmp;
+
+	while (head && head->next && head->next != first)
+		head = head->next;
+	if (head->next == first)
+	{
+		tmp = second->next;
+		head->next = second;
+		second->next = first;
+		first->next = tmp;
+	}
+	else
+		printf("Not found\n");
+}
 
 t_filelist	*time_sort(t_filelist *filelist)
 {
-	t_filelist **begin;
-	t_filelist *placement;
-	t_filelist *tmp;
+	t_filelist *head;
 
-	*begin = filelist;
-	// tmp = filelist->next->next;
-	// *begin = filelist->next;
-	// (*begin)->next = filelist;
-	// filelist->next = tmp;
+	head = (t_filelist *)ft_memalloc(sizeof(t_filelist));
+	head->next = filelist;
 	while (filelist && filelist->next)
 	{
-		if (filelist->stbuf->st_mtimespec.tv_nsec >
-			filelist->next->stbuf->st_mtimespec.tv_nsec)
+		if (filelist->stbuf->st_mtimespec.tv_nsec > filelist->next->stbuf->st_mtimespec.tv_nsec)
 		{
-			tmp = filelist->next->next;
-			placement = filelist->next;
-			placement->next = filelist;
-			filelist->next = tmp;
+			swap_links(head, filelist, filelist->next);
+			filelist = head->next;
 		}
 		else
-		{
 			filelist = filelist->next;
-		}
 	}
-	return (*begin);
+	return (head->next);
+}
+
+t_filelist	*alpha_sort(t_filelist *filelist)
+{
+	t_filelist *head;
+
+	head = (t_filelist *)ft_memalloc(sizeof(t_filelist));
+	head->next = filelist;
+	while (filelist && filelist->next)
+	{
+		if (ft_strcmp(filelist->name, filelist->next->name) > 0)
+		{
+			swap_links(head, filelist, filelist->next);
+			filelist = head->next;
+		}
+		else
+			filelist = filelist->next;
+	}
+	return (head->next);
+}
+
+t_filelist	*reverse_sort(t_filelist *filelist)
+{
+	t_filelist *head;
+
+	head = (t_filelist *)ft_memalloc(sizeof(t_filelist));
+	head->next = filelist;
+	while (filelist && filelist->next)
+	{
+		if (ft_strcmp(filelist->name, filelist->next->name) < 0)
+		{
+			swap_links(head, filelist, filelist->next);
+			filelist = head->next;
+		}
+		else
+			filelist = filelist->next;
+	}
+	return (head->next);
 }

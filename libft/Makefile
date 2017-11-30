@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g
 NAME = libft.a
 CFLAGS += -I libft.h
 LIBFT_SRC = ./ft_strrchr.c \
@@ -63,6 +63,7 @@ LIBFT_SRC = ./ft_strrchr.c \
 ./ft_lstdel.c \
 ./ft_strchr.c \
 ./ft_realloc.c \
+./ft_nbrlen.c \
 
 LIBFT_OBJ = $(subst .c,.o, $(LIBFT_SRC))
 

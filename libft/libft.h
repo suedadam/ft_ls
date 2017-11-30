@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/18 11:27:49 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/20 09:56:37 by asyed            ###   ########.fr       */
+/*   Updated: 2017/11/30 14:35:40 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define LIBFT_H
 # include <string.h>
 # include <unistd.h>
+# include <stdint.h>
 # include <wchar.h>
 # define TRIMSPACE(c) (c == ' ' || c == '\n' || c == '\t')
 
@@ -89,5 +90,6 @@ int				ft_tolower(int c);
 int				ft_toupper(int c);
 void			*ft_realloc(void *src, size_t new_size);
 size_t			ft_wcslen(const wchar_t *s);
+size_t			ft_nbrlen(intmax_t n);
 
 #endif

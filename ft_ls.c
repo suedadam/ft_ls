@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:09:30 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 01:42:32 by asyed            ###   ########.fr       */
+/*   Updated: 2017/11/30 15:50:34 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,21 +42,6 @@ struct s_parse_options options[] = {
 	{'t', &modtime},
 	{'a', &all}
 };
-
-int		add_stats(t_filelist *filelist)
-{
-	struct stat	*stbuf;
-
-	stbuf = (struct stat *)ft_memalloc(sizeof(struct stat));
-	if (!stbuf)
-	{
-		printf("Failed to malloc(stbuf) %s\n", strerror(errno));
-		return (-1);
-	}
-	lstat(filelist->name, stbuf);
-	filelist->stbuf = stbuf;
-	return (1);
-}
 
 // int		fetch_info(struct dirent *dir_info, t_info *file_info)
 // {
@@ -196,19 +181,61 @@ void	printdata(t_filelist *filelist)
 		pwd = getpwuid(filelist->stbuf->st_uid);
 		grp = getgrgid(filelist->stbuf->st_gid);
 		// file mode, number of links, owner name, group name, number of bytes in the file, abbreviated month, day-of-month file was last modified, hour file last modified, minute file last modified, and the pathname
-		printf("permissions%3d %s  %s  %d %s %d time %s\n", filelist->stbuf->st_nlink, pwd->pw_name, grp->gr_name, 0, "placeholder", 0, filelist->name);
+		printf("%s%3d %s  %s %*lld %s %d time %s\n", mode_parse(filelist->stbuf->st_mode), filelist->stbuf->st_nlink, pwd->pw_name, grp->gr_name, filelist->info->largest + 1, filelist->stbuf->st_size, "placeholder", 0, filelist->name);
+		filelist = filelist->next;
+	}
+}
+
+void	handle_directory(t_filelist *filelist)
+{
+	t_filelist		*tmpinfo;
+	struct dirent	*dir_info;
+	DIR				*FD;
+
+	tmpinfo = (t_filelist *)ft_memalloc(sizeof(t_filelist));
+	if (!tmpinfo)
+	{
+		printf("Failed to malloc(tmpinfo) %s\n", strerror(errno));
+		return ;
+	}
+	filelist->directory = tmpinfo;
+	printf("Directory: %s\n", filelist->name);
+	if (!(FD = opendir(filelist->name)))
+	{
+		printf("Error %s\n", strerror(errno));
+		return ;
+	}
+	while ((dir_info = readdir(FD)))
+	{
+		add_file(tmpinfo, dir_info->d_name, filelist->info);
+		if (tmpinfo->next)
+			tmpinfo = tmpinfo->next;
+	}
+}
+
+void	fetch_directories(t_filelist *filelist)
+{
+	printf("filelist = %p and filelist->next = %p\n", filelist, filelist->next);
+	while (filelist && filelist->next)
+	{
+		if (S_ISDIR(filelist->stbuf->st_mode))
+		{
+			handle_directory(filelist);
+			printf("All files inside directory (%s) = \n", filelist->name);
+			printdata(filelist->directory);
+		}
 		filelist = filelist->next;
 	}
 }
 
 void	sort_data(t_filelist **filelist)
 {
-	// if (filelist->info->modtime)
-	*filelist = time_sort(*filelist);
-	// else if (filelist->info->reverse)
-	// 	reverse_sort(filelist);
-	// else
-	// 	alpha_sort(filelist);
+	if ((*filelist)->info->modtime)
+		*filelist = time_sort(*filelist);
+	else if ((*filelist)->info->reverse)
+		*filelist = reverse_sort(*filelist);
+	else
+		*filelist = alpha_sort(*filelist);
 }
 
 int		ft_ls(t_info *file_info)
@@ -218,9 +245,9 @@ int		ft_ls(t_info *file_info)
 	t_filelist		*save;
 	t_filelist		*filelist;
 
-	if (!(FD = opendir("./")))
+	if (!(FD = opendir(file_info->directory)))
 	{
-		printf("Error! %s", strerror(errno));
+		printf("Error! (%s) %s\n", file_info->directory, strerror(errno));
 		return (-1);
 	}
 	print_options(file_info);
@@ -229,18 +256,17 @@ int		ft_ls(t_info *file_info)
 	save = filelist;
 	while ((dir_info = readdir(FD)))
 	{
-		// if (!fetch_info(dir_info, file_info))
-		// {
-		// 	//Set errno accordingly.
-		// 	printf("Failed to fetch file's info\n");
-		// 	return (-1);
-		// }
 		add_file(filelist, dir_info->d_name, file_info);
 		if (filelist->next)
 			filelist = filelist->next;
 	}
+	if (filelist->info->recursive)
+	{
+		printf("Called bitch\n");
+		fetch_directories(save);
+	}
 	sort_data(&save);
-	printdata(save);
+	// printdata(save);
 	return (1);
 }
 
@@ -265,20 +291,24 @@ int		itterate_search(t_info *file_info, char *str)
 
 void	ls_parse_options(char *argv[], int argc, t_info *file_info)
 {
-	char	*str;
 	int		i;
 
 	i = 1;
 	while (i < argc)
 	{
-		str = argv[i];
-		if (*str == '-')
+		if (*(argv[i]) == '-')
 		{
-			str++;
-			itterate_search(file_info, str);
+			(argv[i])++;
+			itterate_search(file_info, argv[i]);
 		}
+		else
+			break;
 		i++;
 	}
+	if (i < argc)
+		file_info->directory = ft_strdup(argv[i]);
+	else
+		file_info->directory = ft_strdup("./");
 }
 
 int		main(int argc, char *argv[])
@@ -294,5 +324,7 @@ int		main(int argc, char *argv[])
 	}
 	// if (argc > 3)
 		ls_parse_options(argv, argc, file_info);
+	printf("Total %d\n", file_info->totalblocks);
+	printf("Directory: %s\n", file_info->directory);
 	return (ft_ls(file_info));
 }

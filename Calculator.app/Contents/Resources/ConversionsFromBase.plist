@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>weights and masses</key>
+	<dict>
+		<key>metric tonnes</key>
+		<string>1000</string>
+		<key>short tons</key>
+		<string>907.18474</string>
+		<key>long tons</key>
+		<string>1016.0469088</string>
+		<key>pounds (us)</key>
+		<string>0.45359237</string>
+		<key>kilograms</key>
+		<string>1.0</string>
+		<key>ounces</key>
+		<string>0.028349523125</string>
+		<key>grams</key>
+		<string>0.001</string>
+		<key>drams</key>
+		<string>0.0017718452</string>
+		<key>slugs</key>
+		<string>14.593902999991704</string>
+	</dict>
+	<key>length</key>
+	<dict>
+		<key>miles</key>
+		<string>1609.344</string>
+		<key>nautical miles</key>
+		<string>1852.0</string>
+		<key>kilometers</key>
+		<string>1000.0</string>
+		<key>feet</key>
+		<string>0.3048</string>
+		<key>meters</key>
+		<string>1.0</string>
+		<key>inches</key>
+		<string>0.0254</string>
+		<key>centimeters</key>
+		<string>0.01</string>
+		<key>millimeters</key>
+		<string>0.001</string>
+		<key>yards</key>
+		<string>0.9144</string>
+	</dict>
+	<key>area</key>
+	<dict>
+		<key>square miles</key>
+		<string>2589988.110336</string>
+		<key>square yards</key>
+		<string>0.83612736</string>
+		<key>square feet</key>
+		<string>0.09290304</string>
+		<key>square inches</key>
+		<string>0.00064516</string>
+		<key>square kilometers</key>
+		<string>1000000.0</string>
+		<key>square meters</key>
+		<string>1.0</string>
+		<key>square centimeters</key>
+		<string>0.000100</string>
+		<key>square millimeters</key>
+		<string>0.000001</string>
+		<key>acres</key>
+		<string>4046.8564224</string>
+		<key>ares</key>
+		<string>100.0</string>
+		<key>decares</key>
+		<string>1000.0</string>
+		<key>hectares</key>
+		<string>10000.0</string>
+	</dict>
+	<key>volume</key>
+	<dict>
+		<key>cubic feet</key>
+		<string>28.316846592</string>
+		<key>cubic meters</key>
+		<string>1000.0</string>
+		<key>liters</key>
+		<string>1.0</string>
+		<key>gallons (us)</key>
+		<string>3.785411784</string>
+		<key>fluid drams (us)</key>
+		<string>0.00369669</string>
+		<key>fluid ounces (us)</key>
+		<string>0.0295735296</string>
+		<key>pints (us)</key>
+		<string>0.473176473</string>
+		<key>quarts (us)</key>
+		<string>0.9463529</string>
+	</dict>
+	<key>speed</key>
+	<dict>
+		<key>miles/hour</key>
+		<string>0.44704</string>
+		<key>miles/minute</key>
+		<string>26.8224</string>
+		<key>feet/minute</key>
+		<string>0.00508</string>
+		<key>feet/second</key>
+		<string>0.3048</string>
+		<key>kilometers/hour</key>
+		<string>0.277777777777778</string>
+		<key>kilometers/minute</key>
+		<string>16.666666666666667</string>
+		<key>knots</key>
+		<string>0.514444444444444</string>
+		<key>meters/second</key>
+		<string>1.00</string>
+	</dict>
+	<key>power</key>
+	<dict>
+		<key>btus/minute</key>
+		<string>0.0175842638</string>
+		<key>foot-pounds/second</key>
+		<string>0.00135581795</string>
+		<key>foot-pounds/minute</key>
+		<string>0.00002259697</string>
+		<key>horsepower</key>
+		<string>0.74569987158227022</string>
+		<key>kilowatts</key>
+		<string>1.0</string>
+		<key>watts</key>
+		<string>0.001</string>
+	</dict>
+	<key>pressure</key>
+	<dict>
+		<key>atmospheres</key>
+		<string>101325</string>
+		<key>bars</key>
+		<string>100000</string>
+		<key>inches of mercury</key>
+		<string>3386</string>
+		<key>millimeters of mercury (torr)</key>
+		<string>133.322</string>
+		<key>pascals</key>
+		<string>1.0</string>
+		<key>pounds/square foot</key>
+		<string>47.880259</string>
+		<key>pounds/square inch</key>
+		<string>6894.75729</string>
+	</dict>
+	<key>energy or work</key>
+	<dict>
+		<key>btus</key>
+		<string>1055.05585257348</string>
+		<key>calories</key>
+		<string>4.1868</string>
+		<key>ergs</key>
+		<string>0.0000001</string>
+		<key>foot-pounds</key>
+		<string>1.3558179483314004</string>
+		<key>joules</key>
+		<string>1.0</string>
+		<key>kilowatt-hours</key>
+		<string>3600000.0</string>
+		<key>kilogram-calories</key>
+		<string>4186.8</string>
+		<key>kilogram-meters</key>
+		<string>9.80665</string>
+		<key>newton-meters</key>
+		<string>1.0</string>
+	</dict>
+	<key>time</key>
+	<dict>
+		<key>seconds</key>
+		<string>1</string>
+		<key>minutes</key>
+		<string>60</string>
+		<key>hours</key>
+		<string>3600</string>
+		<key>days</key>
+		<string>86400</string>
+		<key>weeks</key>
+		<string>604800</string>
+		<key>years</key>
+		<string>31536000</string>
+	</dict>
+	<key>temperature</key>
+	<dict>
+		<key>celsius</key>
+		<array>
+			<string>*</string>
+			<string>1.0</string>
+		</array>
+		<key>kelvin</key>
+		<array>
+			<string>-</string>
+			<string>273.15</string>
+		</array>
+		<key>fahrenheit</key>
+		<array>
+			<string>-</string>
+			<string>32</string>
+			<string>*</string>
+			<string>.5555555555555556</string>
+		</array>
+	</dict>
+</dict>
+</plist>

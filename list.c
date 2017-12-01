@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 21:21:05 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 20:11:01 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/01 02:54:45 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,20 +34,22 @@ int		add_stats(t_filelist *filelist, char *dirname)
 		printf("Failed to malloc(stbuf) %s\n", strerror(errno));
 		return (-1);
 	}
-	lstat(build_path(filelist->path, filelist->name), stbuf);
+	if (lstat(build_path(filelist->path, filelist->name), stbuf) < 0)
+	{
+		printf("Error : %s (%s)\n", strerror(errno), build_path(filelist->path, filelist->name));
+	}
 	filelist->stbuf = stbuf;
 	size = ft_nbrlen(filelist->stbuf->st_size);
 	if (size > filelist->info->largest)
 		filelist->info->largest = size;
-	// printf("(%d) stbuf->st_blocks = %lld\n", filelist->info->totalblocks, stbuf->st_blocks);
-	// filelist->info->totalblocks += stbuf->st_blocks;
 	return (1);
 }
 
 char	*build_path(char *base, char *addition)
 {
 	if ((base && !*base) || !base)
-		base = ft_strjoin("./", addition);
+		base = ft_strdup(addition);
+		// base = ft_strjoin("./", addition);
 	else
 	{
 		base = ft_strjoin(base, "/");
@@ -73,8 +75,10 @@ int		add_file(t_filelist *filelist, char	*name, t_info *file_info, char *dirname
 	else
 		current_list = filelist;
 	current_list->info = file_info;
-	current_list->path = build_path(current_list->path, dirname);
+	current_list->path = filelist->path;
+	// current_list->path = build_path(current_list->path, dirname);
 	current_list->name = ft_strdup(name);
+	printf("{DEBUG} {3} File = %s (%s)\n", current_list->name, current_list->path);
 	add_stats(current_list, dirname);
 	return (1);
 }

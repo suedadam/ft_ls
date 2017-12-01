@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:09:30 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 16:23:43 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/01 02:38:42 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,11 @@ int		init(t_filelist **filelist)
 		return (0);
 }
 
+int		hiddenfile(char *str)
+{
+	return (ft_strcmp(str, ".") && ft_strcmp(str, ".."));
+}
+
 void	printdata(t_filelist *filelist)
 {
 	struct passwd *pwd;
@@ -189,6 +194,7 @@ void	printdata(t_filelist *filelist)
 void	handle_directory(t_filelist *filelist)
 {
 	t_filelist		*tmpinfo;
+	char			*tmp;
 	struct dirent	*dir_info;
 	DIR				*FD;
 
@@ -198,19 +204,33 @@ void	handle_directory(t_filelist *filelist)
 		printf("Failed to malloc(tmpinfo) %s\n", strerror(errno));
 		return ;
 	}
+	tmpinfo->path = filelist->path;
 	filelist->directory = tmpinfo;
-	printf("Directory: %s\n", filelist->name);
-	if (!(FD = opendir(filelist->name)))
+	// printf("handle_directory() %s\n", filelist->path);
+	if (!(FD = opendir(filelist->path)))
 	{
-		printf("Error %s\n", strerror(errno));
+		printf("handle_directory(%s) Error (%s) %s\n", filelist->path, filelist->name, strerror(errno));
 		return ;
 	}
 	while ((dir_info = readdir(FD)))
 	{
+		// printf("handle_directory() Current path = %s + %s\n", tmpinfo->path, filelist->name);
 		add_file(tmpinfo, dir_info->d_name, filelist->info, filelist->name);
+		printf("{DEBUG} %s (%d %d) (\"%s\")\n", tmpinfo->name, hiddenfile(tmpinfo->name), S_ISDIR(tmpinfo->stbuf->st_mode), tmpinfo->path);
+		if (hiddenfile(tmpinfo->name) && S_ISDIR(tmpinfo->stbuf->st_mode))
+		{
+			// tmp = ft_strdup(tmpinfo->path);
+			tmpinfo->path = build_path(tmpinfo->path, tmpinfo->name);
+			handle_directory(tmpinfo);
+			printf("\n%s:\n", tmpinfo->path);
+			printdata(tmpinfo->directory);
+			// free(tmpinfo->path);
+			// tmpinfo->path = tmp;
+		}
 		if (tmpinfo->next)
 			tmpinfo = tmpinfo->next;
 	}
+	closedir(FD);
 }
 
 char	*make_dir_format(char *str)
@@ -239,13 +259,20 @@ char	*make_dir_format(char *str)
 
 void	fetch_directories(t_filelist *filelist)
 {
-	printf("filelist = %p and filelist->next = %p\n", filelist, filelist->next);
-	while (filelist && filelist->next)
+	char	*tmp;
+	while (filelist)
 	{
-		if (S_ISDIR(filelist->stbuf->st_mode))
+		printf("{DEBUG} Path = %s\n", filelist->path);
+		if (ft_strcmp(filelist->name, ".") && ft_strcmp(filelist->name, "..") && S_ISDIR(filelist->stbuf->st_mode))
 		{
+			printf("{DEBUG} {2} What a fucking piece of shit: %s\n", filelist->name);
+			// tmp = ft_strdup(filelist->path);
+			filelist->path = build_path(filelist->path, filelist->name);
+			printf("{DEBUG} fetch_directories() = %s\n", filelist->path);
 			handle_directory(filelist);
-			printf("All files inside directory (%s) = \n", filelist->name);
+			printf("\n%s:\n", filelist->path);
+			// free(filelist->path);
+			// filelist->path = tmp;
 			printdata(filelist->directory);
 		}
 		filelist = filelist->next;
@@ -278,27 +305,17 @@ int		ft_ls(t_info *file_info)
 	if (!init(&filelist))
 		return (-1);
 	save = filelist;
+	filelist->path = build_path(filelist->path, file_info->directory);
 	while ((dir_info = readdir(FD)))
 	{
 		add_file(filelist, dir_info->d_name, file_info, file_info->directory);
-		// if (filelist->next)
-		// {
-		// 	if (!S_ISDIR(filelist->next->stbuf->st_mode))
-		// 	{
-		// 		free_link_data(filelist->next);
-		// 		free(filelist->next);
-		// 		filelist->next = NULL;				
-		// 	}
-		// 	continue;
-		// }
-		// if (!S_ISDIR(filelist->stbuf->st_mode))
-		// 	free_link_data(filelist);
 		if (filelist->next)
 			filelist = filelist->next;
 	}
+	closedir(FD);
 	if (filelist->info->recursive)
 	{
-		printf("Called bitch\n");
+		printf("{DEBUG} {2} Called bitch\n");
 		fetch_directories(save);
 	}
 	sort_data(&save);
@@ -362,6 +379,6 @@ int		main(int argc, char *argv[])
 	// if (argc > 3)
 		ls_parse_options(argv, argc, file_info);
 	printf("Total %d\n", file_info->totalblocks);
-	printf("Directory: %s\n", file_info->directory);
+	// printf("Directory: %s\n", file_info->directory);
 	return (ft_ls(file_info));
 }

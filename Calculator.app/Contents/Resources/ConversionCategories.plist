@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+<array>
+	<string>weights and masses</string>
+	<string>currency</string>
+	<string>length</string>
+	<string>area</string>
+	<string>volume</string>
+	<string>speed</string>
+	<string>power</string>
+	<string>pressure</string>
+	<string>energy or work</string>
+	<string>temperature</string>
+	<string>time</string>
+</array>
+</plist>

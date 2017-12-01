@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:13:02 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 20:10:33 by asyed            ###   ########.fr       */
+/*   Updated: 2017/11/30 21:53:09 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ char		*build_path(char *base, char *addition);
 ** ft_ls.c
 */
 char		*make_dir_format(char *str);
+int			hiddenfile(char *str);
 
 /*
 ** sort.c

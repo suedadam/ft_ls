@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 21:21:05 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 16:34:33 by asyed            ###   ########.fr       */
+/*   Updated: 2017/11/30 20:11:01 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ int		add_stats(t_filelist *filelist, char *dirname)
 		printf("Failed to malloc(stbuf) %s\n", strerror(errno));
 		return (-1);
 	}
-	printf("lstat(%s, %s) = %s\n", dirname, filelist->name, ft_strjoin(dirname, filelist->name));
-	lstat(ft_strjoin(dirname, filelist->name), stbuf);
+	lstat(build_path(filelist->path, filelist->name), stbuf);
 	filelist->stbuf = stbuf;
 	size = ft_nbrlen(filelist->stbuf->st_size);
 	if (size > filelist->info->largest)
@@ -43,6 +42,18 @@ int		add_stats(t_filelist *filelist, char *dirname)
 	// printf("(%d) stbuf->st_blocks = %lld\n", filelist->info->totalblocks, stbuf->st_blocks);
 	// filelist->info->totalblocks += stbuf->st_blocks;
 	return (1);
+}
+
+char	*build_path(char *base, char *addition)
+{
+	if ((base && !*base) || !base)
+		base = ft_strjoin("./", addition);
+	else
+	{
+		base = ft_strjoin(base, "/");
+		base = ft_strjoin(base, addition);		
+	}
+	return (base);
 }
 
 int		add_file(t_filelist *filelist, char	*name, t_info *file_info, char *dirname)
@@ -62,13 +73,8 @@ int		add_file(t_filelist *filelist, char	*name, t_info *file_info, char *dirname
 	else
 		current_list = filelist;
 	current_list->info = file_info;
-	current_list->path = ft_strjoin(ft_strjoin(current_list->path, dirname), name);
-	// current_list->path = ft_strjoin(dirname, name);
+	current_list->path = build_path(current_list->path, dirname);
 	current_list->name = ft_strdup(name);
-	// if (current_list->info->directory)
-	// 	current_list->info->directory = ft_strjoin(current_list->info->directory, dirname);
-	// else
-	// 	current_list->info->directory = ft_strdup(dirname);
 	add_stats(current_list, dirname);
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:09:30 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 15:50:34 by asyed            ###   ########.fr       */
+/*   Updated: 2017/11/30 16:23:43 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,10 +207,34 @@ void	handle_directory(t_filelist *filelist)
 	}
 	while ((dir_info = readdir(FD)))
 	{
-		add_file(tmpinfo, dir_info->d_name, filelist->info);
+		add_file(tmpinfo, dir_info->d_name, filelist->info, filelist->name);
 		if (tmpinfo->next)
 			tmpinfo = tmpinfo->next;
 	}
+}
+
+char	*make_dir_format(char *str)
+{
+	char *new;
+	int i;
+	int length;
+
+	length = ft_strlen(str);
+	i = 0;
+	new = (char *)ft_memalloc(length + 3 * sizeof(char));
+	if (!new)
+	{
+		printf("Error malloc(%s)\n", strerror(errno));
+		return (NULL);
+	}
+	printf("before: %s\n", str);
+	new[i++] = '.';
+	new[i++] = '/';
+	ft_strcat(new, str);
+	i += length;
+	printf("After: %s\n", new);
+	new[i] = '/';
+	return (new);
 }
 
 void	fetch_directories(t_filelist *filelist)
@@ -256,7 +280,19 @@ int		ft_ls(t_info *file_info)
 	save = filelist;
 	while ((dir_info = readdir(FD)))
 	{
-		add_file(filelist, dir_info->d_name, file_info);
+		add_file(filelist, dir_info->d_name, file_info, file_info->directory);
+		// if (filelist->next)
+		// {
+		// 	if (!S_ISDIR(filelist->next->stbuf->st_mode))
+		// 	{
+		// 		free_link_data(filelist->next);
+		// 		free(filelist->next);
+		// 		filelist->next = NULL;				
+		// 	}
+		// 	continue;
+		// }
+		// if (!S_ISDIR(filelist->stbuf->st_mode))
+		// 	free_link_data(filelist);
 		if (filelist->next)
 			filelist = filelist->next;
 	}
@@ -266,7 +302,8 @@ int		ft_ls(t_info *file_info)
 		fetch_directories(save);
 	}
 	sort_data(&save);
-	// printdata(save);
+	printf("\n=======Normal list info ======\n");
+	printdata(save);
 	return (1);
 }
 

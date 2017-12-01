@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:13:02 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 15:27:24 by asyed            ###   ########.fr       */
+/*   Updated: 2017/11/30 16:33:14 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ struct			s_parse_options {
 }				t_parse_options;
 
 typedef struct	s_filelist {
+	char				*path;
 	char				*name;
 	struct s_filelist	*directory;
 	struct stat 		*stbuf;
@@ -51,12 +52,14 @@ int			reverse(t_info *file_info);
 /*
 ** list.c
 */
-int			add_file(t_filelist*, char*, t_info*);
-int			add_stats(t_filelist *filelist);
+int			add_file(t_filelist *, char	*, t_info *, char *);
+int			add_stats(t_filelist *filelist, char *);
+void		free_link_data(t_filelist *filelist);
 
 /*
 ** ft_ls.c
 */
+char		*make_dir_format(char *str);
 
 /*
 ** sort.c

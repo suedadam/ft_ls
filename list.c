@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 21:21:05 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 14:45:08 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 15:05:53 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,39 +99,4 @@ int		add_file(t_filelist **filelist, t_filelist *file_info,
 			return ((ft_printf("Error: %s\n", strerror(errno)) ? 0 : 0));
 	}
 	return (copy_info(filelist, current_list, file_info, dir_info));
-}
-
-int		fixme_add_file(t_filelist *filelist, char *name, t_info *file_info,
-						char *dirname)
-{
-	t_filelist *current_list;
-
-	if (filelist->name)
-	{
-		current_list = (t_filelist *)ft_memalloc(sizeof(t_filelist));
-		if (!current_list)
-		{
-			ft_printf("Error: %s\n", strerror(errno));
-			return (0);
-		}
-		current_list->totalblocks = filelist->totalblocks;
-		filelist->next = current_list;
-	}
-	else
-	{
-		current_list = filelist;
-		free(current_list->totalblocks);
-		current_list->totalblocks = (float *)ft_memalloc(sizeof(float));
-		if (!current_list->totalblocks)
-		{
-			ft_printf("Error: %s\n", strerror(errno));
-			return (0);
-		}
-	}
-	current_list->info = file_info;
-	current_list->path = filelist->path;
-	current_list->name = ft_strdup(name);
-	add_stats(current_list, dirname);
-	*(current_list->totalblocks) += (float)current_list->stbuf->st_size / 512;
-	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/05 03:35:39 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 14:49:18 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 14:59:05 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void		ls_parse_options(char *argv[], int argc, t_info *file_info)
 			itterate_search(file_info, argv[i]);
 		}
 		else
-			break;
+			break ;
 		i++;
 	}
 	if (i < argc)

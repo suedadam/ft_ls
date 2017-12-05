@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:09:30 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 14:57:41 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 15:05:46 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,8 @@ int		ft_ls(t_info *file_info)
 	{
 		if (hiddenfile(file_info, dir_info->d_name))
 			continue ;
-		fixme_add_file(filelist, dir_info->d_name,
-			file_info, file_info->directory);
+		filelist->info = file_info;
+		add_file(&filelist, filelist, dir_info);
 		if (filelist->next)
 			filelist = filelist->next;
 	}

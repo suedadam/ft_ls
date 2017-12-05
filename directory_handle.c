@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/05 14:48:25 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 14:48:40 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 14:59:48 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	make_directory(t_filelist *filelist)
 	new = (t_filelist *)ft_memalloc(sizeof(t_filelist));
 	if (!new)
 	{
-		ft_printf("Failed to malloc(tmpinfo) %s\n", strerror(errno));
+		ft_printf("Error: %s\n", strerror(errno));
 		return ;
 	}
 	new->info = filelist->info;
@@ -31,22 +31,22 @@ void	populate_directory(t_filelist *filelist)
 {
 	char			*tmp;
 	struct dirent	*dir_info;
-	DIR				*FD;
+	DIR				*fd;
 	t_filelist		*local;
 
 	local = filelist->directory;
-	if (!(FD = opendir(local->path)))
+	if (!(fd = opendir(local->path)))
 	{
-		ft_printf("handle_directory(%s) Error (%s) %s\n", filelist->directory->path, filelist->name, strerror(errno));
+		ft_printf("Error: %s\n", strerror(errno));
 		return ;
 	}
-	while ((dir_info = readdir(FD)))
+	while ((dir_info = readdir(fd)))
 	{
 		add_file(&local, filelist, dir_info);
 		if (local->next)
 			local = local->next;
 	}
-	closedir(FD);
+	closedir(fd);
 }
 
 void	fetch_directories(t_filelist *filelist)
@@ -55,7 +55,8 @@ void	fetch_directories(t_filelist *filelist)
 
 	while (filelist)
 	{
-		if (ft_strcmp(filelist->name, ".") && ft_strcmp(filelist->name, "..") && S_ISDIR(filelist->stbuf->st_mode))
+		if (ft_strcmp(filelist->name, ".") && ft_strcmp(filelist->name, "..")
+			&& S_ISDIR(filelist->stbuf->st_mode))
 		{
 			make_directory(filelist);
 			populate_directory(filelist);

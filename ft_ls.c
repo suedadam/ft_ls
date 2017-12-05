@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:09:30 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/04 23:10:15 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 01:46:02 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,14 @@ int		init(t_filelist **filelist)
 		return (0);
 }
 
-int		hiddenfile(char *str)
+int		hiddenfile(t_info *file_info, char *str)
 {
-	return (ft_strcmp(str, ".") && ft_strcmp(str, ".."));
+	if (file_info->all)
+		return (0);
+	else if (*str == '.')
+		return (1);
+	else
+		return (0);
 }
 
 void	printdata(t_filelist *filelist)
@@ -78,11 +83,11 @@ void	printdata(t_filelist *filelist)
 	struct passwd *pwd;
 	struct group *grp;
 
-	// printf("total %d\n", total_512(filelist));
-	// printf("total %d\n", filelist->totalblocks);
+	printf("total %d\n", CEILING_POS(*(filelist->totalblocks)));
 	while (filelist)
 	{
-		if (!filelist->info->all && (!ft_strcmp(filelist->name, ".") || !ft_strcmp(filelist->name, "..")))
+		// printf("PRINTDATA(%s = %d)\n", filelist->name, hiddenfile(filelist->info, filelist->name));
+		if (hiddenfile(filelist->info, filelist->name))
 		{
 			// printf("LOL: \"%s\" (%d %d)\n", filelist->name, ft_strcmp(filelist->name, "."), ft_strcmp(filelist->name, ".."));
 			filelist = filelist->next;
@@ -100,47 +105,47 @@ void	printdata(t_filelist *filelist)
 	}
 }
 
-void	handle_directory(t_filelist *filelist)
-{
-	t_filelist		*tmpinfo;
-	char			*tmp;
-	struct dirent	*dir_info;
-	DIR				*FD;
+// void	handle_directory(t_filelist *filelist)
+// {
+// 	t_filelist		*tmpinfo;
+// 	char			*tmp;
+// 	struct dirent	*dir_info;
+// 	DIR				*FD;
 
-	tmpinfo = (t_filelist *)ft_memalloc(sizeof(t_filelist));
-	if (!tmpinfo)
-	{
-		printf("Failed to malloc(tmpinfo) %s\n", strerror(errno));
-		return ;
-	}
-	tmpinfo->path = filelist->path;
-	filelist->directory = tmpinfo;
-	// printf("handle_directory() %s\n", filelist->path);
-	if (!(FD = opendir(tmpinfo->path)))
-	{
-		printf("handle_directory(%s) Error (%s) %s\n", tmpinfo->path, filelist->name, strerror(errno));
-		return ;
-	}
-	while ((dir_info = readdir(FD)))
-	{
-		add_file(&tmpinfo, filelist, dir_info);
-		// add_file(tmpinfo, dir_info->d_name, filelist->info, filelist->name);
-		if (hiddenfile(tmpinfo->name) && S_ISDIR(tmpinfo->stbuf->st_mode))
-		{
-			tmp = ft_strdup(tmpinfo->path);
-			tmpinfo->path = build_path(tmpinfo->path, tmpinfo->name);
-			handle_directory(tmpinfo);
-			printf("\n%s:\n", tmpinfo->path);
-			sort_data(&(tmpinfo->directory));
-			printdata(tmpinfo->directory);
-			free(tmpinfo->path);
-			tmpinfo->path = tmp;
-		}
-		if (tmpinfo->next)
-			tmpinfo = tmpinfo->next;
-	}
-	closedir(FD);
-}
+// 	tmpinfo = (t_filelist *)ft_memalloc(sizeof(t_filelist));
+// 	if (!tmpinfo)
+// 	{
+// 		printf("Failed to malloc(tmpinfo) %s\n", strerror(errno));
+// 		return ;
+// 	}
+// 	tmpinfo->path = filelist->path;
+// 	filelist->directory = tmpinfo;
+// 	// printf("handle_directory() %s\n", filelist->path);
+// 	if (!(FD = opendir(tmpinfo->path)))
+// 	{
+// 		printf("handle_directory(%s) Error (%s) %s\n", tmpinfo->path, filelist->name, strerror(errno));
+// 		return ;
+// 	}
+// 	while ((dir_info = readdir(FD)))
+// 	{
+// 		add_file(&tmpinfo, filelist, dir_info);
+// 		// add_file(tmpinfo, dir_info->d_name, filelist->info, filelist->name);
+// 		if (hiddenfile(tmpinfo->name) && S_ISDIR(tmpinfo->stbuf->st_mode))
+// 		{
+// 			tmp = ft_strdup(tmpinfo->path);
+// 			tmpinfo->path = build_path(tmpinfo->path, tmpinfo->name);
+// 			handle_directory(tmpinfo);
+// 			printf("\n%s:\n", tmpinfo->path);
+// 			sort_data(&(tmpinfo->directory));
+// 			printdata(tmpinfo->directory);
+// 			free(tmpinfo->path);
+// 			tmpinfo->path = tmp;
+// 		}
+// 		if (tmpinfo->next)
+// 			tmpinfo = tmpinfo->next;
+// 	}
+// 	closedir(FD);
+// }
 
 void	make_directory(t_filelist *filelist)
 {
@@ -221,8 +226,9 @@ void	fetch_directories(t_filelist *filelist)
 		{
 			make_directory(filelist);
 			populate_directory(filelist);
-			printf("(%s) filelist->directory->totalblocks = %p\n", filelist->name, filelist->directory->totalblocks);
-			printf("\n%s/%s:total %d\n", filelist->path, filelist->name, *(filelist->directory->totalblocks));
+			sort_data(&(filelist->directory));
+			// printf("(%s) filelist->directory->totalblocks = %p\n", filelist->name, filelist->directory->totalblocks);
+			printf("\n%s/%s:\n", filelist->path, filelist->name);
 			printdata(filelist->directory);
 			fetch_directories(filelist->directory);
 		}
@@ -259,6 +265,9 @@ int		ft_ls(t_info *file_info)
 	filelist->path = build_path(filelist->path, file_info->directory);
 	while ((dir_info = readdir(FD)))
 	{
+		// printf("\"%s\" = %d\n", dir_info->d_name, hiddenfile(file_info, dir_info->d_name));
+		if (hiddenfile(file_info, dir_info->d_name))
+			continue ;
 		// add_file(filelist, file_info, dir_info, file_info->directory);
 		fixme_add_file(filelist, dir_info->d_name, file_info, file_info->directory);
 		if (filelist->next)
@@ -268,11 +277,8 @@ int		ft_ls(t_info *file_info)
 	sort_data(&save);
 	// printf("\n%s/%s:\n", save->path, save->name);
 	printdata(save);
-	// if (filelist->info->recursive)
-	// {
-		printf("{DEBUG} {2} Called bitch\n");
+	if (filelist->info->recursive)
 		fetch_directories(save);
-	// }
 	return (1);
 }
 
@@ -283,11 +289,13 @@ int		itterate_search(t_info *file_info, char *str)
 
 	i = 0;
 	ret = 0;
-	while (options[i].flag)
+	while (options[i].flag && *str)
 	{
+
 		if (*str == options[i].flag)
 		{
 			ret += options[i].func(file_info);
+			i = 0;
 			str++;
 		}
 		i++;
@@ -328,9 +336,6 @@ int		main(int argc, char *argv[])
 		printf("Failed to malloc(file_info) = %s\n", strerror(errno));
 		return (-1);
 	}
-	// if (argc > 3)
-		ls_parse_options(argv, argc, file_info);
-	// printf("Total %d\n", file_info->totalblocks);
-	// printf("Directory: %s\n", file_info->directory);
+	ls_parse_options(argv, argc, file_info);;
 	return (ft_ls(file_info));
 }

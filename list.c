@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 21:21:05 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/04 23:05:19 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 01:35:13 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ int		add_stats(t_filelist *filelist, char *dirname)
 	size = ft_nbrlen(filelist->stbuf->st_size);
 	if (size > filelist->info->largest)
 		filelist->info->largest = size;
-	// filelist->totalblocks += filelist->stbuf->st_size;
 	return (1);
 }
 
@@ -72,13 +71,9 @@ int		add_file(t_filelist **filelist, t_filelist *file_info, struct dirent *dir_i
 			return (0);
 		}
 		(*filelist)->next = current_list;
+		// printf("(*filelist)->totalblocks = %p\n", (*filelist)->totalblocks);
+		current_list->totalblocks = (*filelist)->totalblocks;
 		current_list->path = (*filelist)->path;
-		current_list->totalblocks = (int *)ft_memalloc(sizeof(int));
-		if (!current_list->totalblocks)
-		{
-			printf("Failed to malloc(current_list->totalblocks) %s\n", strerror(errno));
-			return (0);
-		}
 		*filelist = (*filelist)->next;
 		// printf("add_file() {FLUFF} %s\n", dir_info->d_name);
 	}
@@ -86,14 +81,26 @@ int		add_file(t_filelist **filelist, t_filelist *file_info, struct dirent *dir_i
 	{
 		// printf("{BUN} %s\n", dir_info->d_name);
 		current_list = (*filelist);
+		free(current_list->totalblocks);
+		current_list->totalblocks = (float *)ft_memalloc(sizeof(float));
+		if (!current_list->totalblocks)
+		{
+			printf("Failed to malloc(current_list->totalblocks) %s\n", strerror(errno));
+			return (0);
+		}
 	}
 	current_list->info = file_info->info;
+	// printf("Path = %s\n", (*filelist)->path);
 	current_list->path = (*filelist)->path;
 	current_list->name = ft_strdup(dir_info->d_name);
 	// printf("{BUN} %s == %s\n", current_list->name, dir_info->d_name);
 	add_stats(current_list, file_info->name);
-	printf("(%s) current_list->totalblocks = %p\n", current_list->name, current_list->totalblocks);
-	current_list->totalblocks += current_list->stbuf->st_size;
+	// printf("(%s) current_list->totalblocks = %p\n", current_list->name, current_list->totalblocks);
+	// printf("(%s) Previous = %f\n", current_list->name, *(current_list->totalblocks));
+	if (!hiddenfile(file_info->info, current_list->name))
+		*(current_list->totalblocks) += (float)current_list->stbuf->st_size / 512;
+	// current_list->totalblocks += (hiddenfile(file_info->info, current_list->name)) ? 0 : (float)current_list->stbuf->st_size / 512;
+	// printf("(%s) New = %f\n", current_list->name, *(current_list->totalblocks));
 	return (1);
 }
 
@@ -109,14 +116,25 @@ int		fixme_add_file(t_filelist *filelist, char	*name, t_info *file_info, char *d
 			printf("Failed to malloc(newlink) %s\n", strerror(errno));
 			return (0);
 		}
+		current_list->totalblocks = filelist->totalblocks;
 		filelist->next = current_list;
 	}
 	else
+	{	
 		current_list = filelist;
+		free(current_list->totalblocks);
+		current_list->totalblocks = (float *)ft_memalloc(sizeof(float));
+		if (!current_list->totalblocks)
+		{
+			printf("Failed to malloc(current_list->totalblocks) %s\n", strerror(errno));
+			return (0);
+		}
+	}
 	current_list->info = file_info;
 	current_list->path = filelist->path;
 	// current_list->path = build_path(current_list->path, dirname);
 	current_list->name = ft_strdup(name);
 	add_stats(current_list, dirname);
+	*(current_list->totalblocks) += (float)current_list->stbuf->st_size / 512;
 	return (1);
 }

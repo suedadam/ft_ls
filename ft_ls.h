@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:13:02 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/04 22:58:18 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 01:37:18 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,10 @@
 # include <stdint.h>
 # include <stdio.h>
 # include "libft.h"
+/*
+** https://www.linuxquestions.org/questions/programming-9/ceiling-function-c-programming-637404/
+*/ 
+# define CEILING_POS(X) ((X-(int)(X)) > 0 ? (int)(X+1) : (int)(X))
 
 typedef struct	s_info
 {
@@ -32,7 +36,7 @@ struct			s_parse_options {
 typedef struct	s_filelist {
 	char				*path;
 	char				*name;
-	int					*totalblocks;
+	float				*totalblocks;
 	struct s_filelist	*directory;
 	struct stat 		*stbuf;
 	struct s_info		*info;
@@ -63,7 +67,7 @@ char		*build_path(char *base, char *addition);
 ** ft_ls.c
 */
 char		*make_dir_format(char *str);
-int			hiddenfile(char *str);
+int			hiddenfile(t_info *filelist, char *str);
 void		sort_data(t_filelist **filelist);
 void		fetch_directories(t_filelist *filelist);
 

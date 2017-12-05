@@ -6,12 +6,11 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/30 14:11:21 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 16:11:46 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 14:10:51 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-#include <errno.h>
 
 char	*mode_parse(mode_t mode)
 {
@@ -23,7 +22,7 @@ char	*mode_parse(mode_t mode)
 	perm = (char *)ft_memalloc(10 * sizeof(char));
 	if (!perm)
 	{
-		printf("Failed to malloc(perm) %s \n", strerror(errno));
+		ft_printf("Failed to malloc(perm) %s \n", strerror(errno));
 		return (NULL);
 	}
 	i = 0;

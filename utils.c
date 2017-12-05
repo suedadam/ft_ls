@@ -6,13 +6,11 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/05 03:35:39 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 03:37:44 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 14:10:56 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-#include <errno.h>
-#include <stdlib.h>
 
 t_timespec	*parse_time(char *str)
 {
@@ -22,7 +20,7 @@ t_timespec	*parse_time(char *str)
 	new = (t_timespec *)ft_memalloc(sizeof(t_timespec));
 	if (!new)
 	{
-		printf("failed to ft_memalloc(t_timespec) %s\n", strerror(errno));
+		ft_printf("failed to ft_memalloc(t_timespec) %s\n", strerror(errno));
 		return (NULL);
 	}
 	data = ft_strsplit(str, ' ');

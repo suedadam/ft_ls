@@ -6,12 +6,21 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 22:58:00 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 14:06:25 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 14:17:41 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-#include <sys/stat.h>
+
+void	sort_data(t_filelist **filelist)
+{
+	if ((*filelist)->info->modtime)
+		*filelist = time_sort(*filelist);
+	else if ((*filelist)->info->reverse)
+		*filelist = reverse_sort(*filelist);
+	else
+		*filelist = alpha_sort(*filelist);
+}
 
 /*
 ** Shitty swap, I should swap the links themselves. 
@@ -30,7 +39,7 @@ void	swap_links(t_filelist *head, t_filelist *first, t_filelist *second)
 		first->next = tmp;
 	}
 	else
-		printf("Not found\n");
+		ft_printf("Not found\n");
 }
 
 t_filelist	*time_sort(t_filelist *filelist)

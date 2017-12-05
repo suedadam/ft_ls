@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:13:02 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/01 13:58:35 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/04 22:58:18 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ typedef struct	s_info
 	uint8_t			all:1,longlist:1,reverse:1,recursive:1,modtime:1;
 	int				largest;
 	char			*directory;
-	int				totalblocks;
 }				t_info;
 
 struct			s_parse_options {
@@ -33,6 +32,7 @@ struct			s_parse_options {
 typedef struct	s_filelist {
 	char				*path;
 	char				*name;
+	int					*totalblocks;
 	struct s_filelist	*directory;
 	struct stat 		*stbuf;
 	struct s_info		*info;
@@ -65,6 +65,7 @@ char		*build_path(char *base, char *addition);
 char		*make_dir_format(char *str);
 int			hiddenfile(char *str);
 void		sort_data(t_filelist **filelist);
+void		fetch_directories(t_filelist *filelist);
 
 /*
 ** sort.c

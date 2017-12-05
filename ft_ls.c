@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:09:30 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/04 12:54:06 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/04 23:10:15 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,20 +52,6 @@ int		sanity(struct dirent *dir_info)
 	return (1);
 }
 
-// void	print_files(t_info *file_info, DIR *FD)
-// {
-// 	struct dirent	*new_info;
-
-// 	while ((new_info = readdir(FD)))
-// 	{
-// 		if (!fetch_info(new_info, file_info))
-// 		{
-// 			printf("Failed to fetch file info\n");
-// 			return ;
-// 		}
-// 	}
-// }
-
 int		init(t_filelist **filelist)
 {
 	if (filelist)
@@ -93,13 +79,19 @@ void	printdata(t_filelist *filelist)
 	struct group *grp;
 
 	// printf("total %d\n", total_512(filelist));
-	while (filelist && filelist->name)
+	// printf("total %d\n", filelist->totalblocks);
+	while (filelist)
 	{
-		if (!filelist->info->all && !ft_strncmp(filelist->name, ".", 1))
+		if (!filelist->info->all && (!ft_strcmp(filelist->name, ".") || !ft_strcmp(filelist->name, "..")))
 		{
+			// printf("LOL: \"%s\" (%d %d)\n", filelist->name, ft_strcmp(filelist->name, "."), ft_strcmp(filelist->name, ".."));
 			filelist = filelist->next;
 			continue ;
 		}
+		// else
+		// {
+		// 	printf("wow adam: \"%s\" (%d %d)\n", filelist->name, ft_strcmp(filelist->name, "."), ft_strcmp(filelist->name, ".."));
+		// }
 		pwd = getpwuid(filelist->stbuf->st_uid);
 		grp = getgrgid(filelist->stbuf->st_gid);
 		// file mode, number of links, owner name, group name, number of bytes in the file, abbreviated month, day-of-month file was last modified, hour file last modified, minute file last modified, and the pathname
@@ -150,21 +142,89 @@ void	handle_directory(t_filelist *filelist)
 	closedir(FD);
 }
 
+void	make_directory(t_filelist *filelist)
+{
+	t_filelist	*new;
+
+	new = (t_filelist *)ft_memalloc(sizeof(t_filelist));
+	if (!new)
+	{
+		printf("Failed to malloc(tmpinfo) %s\n", strerror(errno));
+		return ;
+	}
+	new->info = filelist->info;
+	new->path = build_path(filelist->path, filelist->name);
+	// printf("New->path = \"%s\"\n", new->path);
+	filelist->directory = new;
+}
+
+void	populate_directory(t_filelist *filelist)
+{
+	char			*tmp;
+	struct dirent	*dir_info;
+	DIR				*FD;
+	t_filelist		*local;
+
+	local = filelist->directory;
+	if (!(FD = opendir(local->path)))
+	{
+		printf("handle_directory(%s) Error (%s) %s\n", filelist->directory->path, filelist->name, strerror(errno));
+		return ;
+	}
+	while ((dir_info = readdir(FD)))
+	{
+		// printf("rofl\n");
+		add_file(&local, filelist, dir_info);
+		// printf("POS %s\n", filelist->directory->name);
+		// if (hiddenfile(local->name) && S_ISDIR(local->stbuf->st_mode))
+		// {
+		// 	make_directory(local);
+		// 	populate_directory(local);
+		// 	printf("\n%s/%s:\n", local->path, local->name);
+		// 	printdata(local->directory);
+		// 	//Continue...
+		// }
+		if (local->next)
+			local = local->next;
+	}
+	closedir(FD);
+}
+
+// void	fetch_directories(t_filelist *filelist)
+// {
+// 	char	*tmp;
+// 	while (filelist)
+// 	{
+// 		if (ft_strcmp(filelist->name, ".") && ft_strcmp(filelist->name, "..") && S_ISDIR(filelist->stbuf->st_mode))
+// 		{
+// 			// tmp = ft_strdup(filelist->path);
+// 			filelist->path = build_path(filelist->path, filelist->name);
+// 			handle_directory(filelist);
+// 			write(1, "1\n", 2);
+// 			printf("\n(Penis) %s:\n", filelist->path);
+// 			// free(filelist->path);
+// 			// filelist->path = tmp;
+// 			// sort_data(&(filelist->directory));
+// 			printdata(filelist->directory);
+// 		}
+// 		filelist = filelist->next;
+// 	}
+// }
+
 void	fetch_directories(t_filelist *filelist)
 {
 	char	*tmp;
+
 	while (filelist)
 	{
 		if (ft_strcmp(filelist->name, ".") && ft_strcmp(filelist->name, "..") && S_ISDIR(filelist->stbuf->st_mode))
 		{
-			// tmp = ft_strdup(filelist->path);
-			filelist->path = build_path(filelist->path, filelist->name);
-			handle_directory(filelist);
-			printf("\n%s:\n", filelist->path);
-			// free(filelist->path);
-			// filelist->path = tmp;
-			sort_data(&(filelist->directory));
+			make_directory(filelist);
+			populate_directory(filelist);
+			printf("(%s) filelist->directory->totalblocks = %p\n", filelist->name, filelist->directory->totalblocks);
+			printf("\n%s/%s:total %d\n", filelist->path, filelist->name, *(filelist->directory->totalblocks));
 			printdata(filelist->directory);
+			fetch_directories(filelist->directory);
 		}
 		filelist = filelist->next;
 	}
@@ -205,14 +265,14 @@ int		ft_ls(t_info *file_info)
 			filelist = filelist->next;
 	}
 	closedir(FD);
-	if (filelist->info->recursive)
-	{
+	sort_data(&save);
+	// printf("\n%s/%s:\n", save->path, save->name);
+	printdata(save);
+	// if (filelist->info->recursive)
+	// {
 		printf("{DEBUG} {2} Called bitch\n");
 		fetch_directories(save);
-	}
-	sort_data(&save);
-	printf("\n=======Normal list info ======\n");
-	printdata(save);
+	// }
 	return (1);
 }
 
@@ -270,7 +330,7 @@ int		main(int argc, char *argv[])
 	}
 	// if (argc > 3)
 		ls_parse_options(argv, argc, file_info);
-	printf("Total %d\n", file_info->totalblocks);
+	// printf("Total %d\n", file_info->totalblocks);
 	// printf("Directory: %s\n", file_info->directory);
 	return (ft_ls(file_info));
 }

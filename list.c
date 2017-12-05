@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 21:21:05 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/01 13:55:54 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/04 23:05:19 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int		add_stats(t_filelist *filelist, char *dirname)
 	size = ft_nbrlen(filelist->stbuf->st_size);
 	if (size > filelist->info->largest)
 		filelist->info->largest = size;
+	// filelist->totalblocks += filelist->stbuf->st_size;
 	return (1);
 }
 
@@ -72,6 +73,12 @@ int		add_file(t_filelist **filelist, t_filelist *file_info, struct dirent *dir_i
 		}
 		(*filelist)->next = current_list;
 		current_list->path = (*filelist)->path;
+		current_list->totalblocks = (int *)ft_memalloc(sizeof(int));
+		if (!current_list->totalblocks)
+		{
+			printf("Failed to malloc(current_list->totalblocks) %s\n", strerror(errno));
+			return (0);
+		}
 		*filelist = (*filelist)->next;
 		// printf("add_file() {FLUFF} %s\n", dir_info->d_name);
 	}
@@ -85,6 +92,8 @@ int		add_file(t_filelist **filelist, t_filelist *file_info, struct dirent *dir_i
 	current_list->name = ft_strdup(dir_info->d_name);
 	// printf("{BUN} %s == %s\n", current_list->name, dir_info->d_name);
 	add_stats(current_list, file_info->name);
+	printf("(%s) current_list->totalblocks = %p\n", current_list->name, current_list->totalblocks);
+	current_list->totalblocks += current_list->stbuf->st_size;
 	return (1);
 }
 

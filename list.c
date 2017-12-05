@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 21:21:05 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 15:05:53 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 15:48:50 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,12 @@ int		add_stats(t_filelist *filelist, char *dirname)
 	size = ft_nbrlen(filelist->stbuf->st_size);
 	if (size > filelist->info->largest)
 		filelist->info->largest = size;
+	size = ft_strlen(getpwuid(filelist->stbuf->st_uid)->pw_name);
+	if (size > filelist->info->largestword)
+		filelist->info->largestword = size;
+	size = ft_strlen(getgrgid(filelist->stbuf->st_gid)->gr_name);
+	if (size > filelist->info->largestgroup)
+		filelist->info->largestgroup = size;
 	return (1);
 }
 

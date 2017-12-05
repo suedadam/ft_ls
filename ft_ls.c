@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:09:30 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 15:05:46 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 15:49:45 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,11 @@ void	printdata(t_filelist *filelist)
 		pwd = getpwuid(filelist->stbuf->st_uid);
 		grp = getgrgid(filelist->stbuf->st_gid);
 		time = parse_time(ctime(&(filelist->stbuf->st_mtime)));
-		ft_printf("%c%s%3d %s  %s %*lld %s %2s %s %s\n",
+		ft_printf("%c%s%3d %*s %*s %*lld %s %2s %s %s\n",
 			(S_ISDIR(filelist->stbuf->st_mode) ? 'd' : '-'),
 			mode_parse(filelist->stbuf->st_mode),
-			filelist->stbuf->st_nlink, pwd->pw_name, grp->gr_name,
+			filelist->stbuf->st_nlink, filelist->info->largestword + 1,
+			pwd->pw_name, filelist->info->largestgroup + 1, grp->gr_name,
 			filelist->info->largest + 1, filelist->stbuf->st_size,
 			time->month, time->date, time->time, filelist->name);
 		filelist = filelist->next;

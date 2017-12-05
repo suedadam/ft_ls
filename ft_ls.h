@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:13:02 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 15:05:59 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 15:48:42 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ typedef struct	s_info
 	uint8_t		recursive:1;
 	uint8_t		modtime:1;
 	int			largest;
+	int			largestword;
+	int			largestgroup;
 	char		*directory;
 }				t_info;
 

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:13:02 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 01:37:18 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 03:36:01 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,13 @@
 ** https://www.linuxquestions.org/questions/programming-9/ceiling-function-c-programming-637404/
 */ 
 # define CEILING_POS(X) ((X-(int)(X)) > 0 ? (int)(X+1) : (int)(X))
+
+typedef struct	s_timespec
+{
+	char		*month;
+	char		*time;
+	char		*date;
+}				t_timespec;
 
 typedef struct	s_info
 {
@@ -42,6 +49,12 @@ typedef struct	s_filelist {
 	struct s_info		*info;
 	struct s_filelist	*next;
 }				t_filelist;
+
+
+/*
+** ft_ls.h
+*/
+t_timespec	*parse_time(char *str);
 
 /*
 ** options.c

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:09:30 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 01:46:02 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 03:39:00 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,72 +80,27 @@ int		hiddenfile(t_info *file_info, char *str)
 
 void	printdata(t_filelist *filelist)
 {
-	struct passwd *pwd;
-	struct group *grp;
+	struct passwd		*pwd;
+	struct group		*grp;
+	struct s_timespec	*time;
 
 	printf("total %d\n", CEILING_POS(*(filelist->totalblocks)));
 	while (filelist)
 	{
-		// printf("PRINTDATA(%s = %d)\n", filelist->name, hiddenfile(filelist->info, filelist->name));
 		if (hiddenfile(filelist->info, filelist->name))
 		{
-			// printf("LOL: \"%s\" (%d %d)\n", filelist->name, ft_strcmp(filelist->name, "."), ft_strcmp(filelist->name, ".."));
 			filelist = filelist->next;
 			continue ;
 		}
-		// else
-		// {
-		// 	printf("wow adam: \"%s\" (%d %d)\n", filelist->name, ft_strcmp(filelist->name, "."), ft_strcmp(filelist->name, ".."));
-		// }
 		pwd = getpwuid(filelist->stbuf->st_uid);
 		grp = getgrgid(filelist->stbuf->st_gid);
+
+		time = parse_time(ctime(&(filelist->stbuf->st_mtime)));
 		// file mode, number of links, owner name, group name, number of bytes in the file, abbreviated month, day-of-month file was last modified, hour file last modified, minute file last modified, and the pathname
-		printf("%s%3d %s  %s %*lld %s %d time %s\n", mode_parse(filelist->stbuf->st_mode), filelist->stbuf->st_nlink, pwd->pw_name, grp->gr_name, filelist->info->largest + 1, filelist->stbuf->st_size, "placeholder", 0, filelist->name);
+		printf("%s%3d %s  %s %*lld %s %2s %s %s\n", mode_parse(filelist->stbuf->st_mode), filelist->stbuf->st_nlink, pwd->pw_name, grp->gr_name, filelist->info->largest + 1, filelist->stbuf->st_size, time->month, time->date, time->time, filelist->name);
 		filelist = filelist->next;
 	}
 }
-
-// void	handle_directory(t_filelist *filelist)
-// {
-// 	t_filelist		*tmpinfo;
-// 	char			*tmp;
-// 	struct dirent	*dir_info;
-// 	DIR				*FD;
-
-// 	tmpinfo = (t_filelist *)ft_memalloc(sizeof(t_filelist));
-// 	if (!tmpinfo)
-// 	{
-// 		printf("Failed to malloc(tmpinfo) %s\n", strerror(errno));
-// 		return ;
-// 	}
-// 	tmpinfo->path = filelist->path;
-// 	filelist->directory = tmpinfo;
-// 	// printf("handle_directory() %s\n", filelist->path);
-// 	if (!(FD = opendir(tmpinfo->path)))
-// 	{
-// 		printf("handle_directory(%s) Error (%s) %s\n", tmpinfo->path, filelist->name, strerror(errno));
-// 		return ;
-// 	}
-// 	while ((dir_info = readdir(FD)))
-// 	{
-// 		add_file(&tmpinfo, filelist, dir_info);
-// 		// add_file(tmpinfo, dir_info->d_name, filelist->info, filelist->name);
-// 		if (hiddenfile(tmpinfo->name) && S_ISDIR(tmpinfo->stbuf->st_mode))
-// 		{
-// 			tmp = ft_strdup(tmpinfo->path);
-// 			tmpinfo->path = build_path(tmpinfo->path, tmpinfo->name);
-// 			handle_directory(tmpinfo);
-// 			printf("\n%s:\n", tmpinfo->path);
-// 			sort_data(&(tmpinfo->directory));
-// 			printdata(tmpinfo->directory);
-// 			free(tmpinfo->path);
-// 			tmpinfo->path = tmp;
-// 		}
-// 		if (tmpinfo->next)
-// 			tmpinfo = tmpinfo->next;
-// 	}
-// 	closedir(FD);
-// }
 
 void	make_directory(t_filelist *filelist)
 {
@@ -159,7 +114,6 @@ void	make_directory(t_filelist *filelist)
 	}
 	new->info = filelist->info;
 	new->path = build_path(filelist->path, filelist->name);
-	// printf("New->path = \"%s\"\n", new->path);
 	filelist->directory = new;
 }
 
@@ -178,43 +132,12 @@ void	populate_directory(t_filelist *filelist)
 	}
 	while ((dir_info = readdir(FD)))
 	{
-		// printf("rofl\n");
 		add_file(&local, filelist, dir_info);
-		// printf("POS %s\n", filelist->directory->name);
-		// if (hiddenfile(local->name) && S_ISDIR(local->stbuf->st_mode))
-		// {
-		// 	make_directory(local);
-		// 	populate_directory(local);
-		// 	printf("\n%s/%s:\n", local->path, local->name);
-		// 	printdata(local->directory);
-		// 	//Continue...
-		// }
 		if (local->next)
 			local = local->next;
 	}
 	closedir(FD);
 }
-
-// void	fetch_directories(t_filelist *filelist)
-// {
-// 	char	*tmp;
-// 	while (filelist)
-// 	{
-// 		if (ft_strcmp(filelist->name, ".") && ft_strcmp(filelist->name, "..") && S_ISDIR(filelist->stbuf->st_mode))
-// 		{
-// 			// tmp = ft_strdup(filelist->path);
-// 			filelist->path = build_path(filelist->path, filelist->name);
-// 			handle_directory(filelist);
-// 			write(1, "1\n", 2);
-// 			printf("\n(Penis) %s:\n", filelist->path);
-// 			// free(filelist->path);
-// 			// filelist->path = tmp;
-// 			// sort_data(&(filelist->directory));
-// 			printdata(filelist->directory);
-// 		}
-// 		filelist = filelist->next;
-// 	}
-// }
 
 void	fetch_directories(t_filelist *filelist)
 {
@@ -227,7 +150,6 @@ void	fetch_directories(t_filelist *filelist)
 			make_directory(filelist);
 			populate_directory(filelist);
 			sort_data(&(filelist->directory));
-			// printf("(%s) filelist->directory->totalblocks = %p\n", filelist->name, filelist->directory->totalblocks);
 			printf("\n%s/%s:\n", filelist->path, filelist->name);
 			printdata(filelist->directory);
 			fetch_directories(filelist->directory);
@@ -265,17 +187,14 @@ int		ft_ls(t_info *file_info)
 	filelist->path = build_path(filelist->path, file_info->directory);
 	while ((dir_info = readdir(FD)))
 	{
-		// printf("\"%s\" = %d\n", dir_info->d_name, hiddenfile(file_info, dir_info->d_name));
 		if (hiddenfile(file_info, dir_info->d_name))
 			continue ;
-		// add_file(filelist, file_info, dir_info, file_info->directory);
 		fixme_add_file(filelist, dir_info->d_name, file_info, file_info->directory);
 		if (filelist->next)
 			filelist = filelist->next;
 	}
 	closedir(FD);
 	sort_data(&save);
-	// printf("\n%s/%s:\n", save->path, save->name);
 	printdata(save);
 	if (filelist->info->recursive)
 		fetch_directories(save);
@@ -291,7 +210,6 @@ int		itterate_search(t_info *file_info, char *str)
 	ret = 0;
 	while (options[i].flag && *str)
 	{
-
 		if (*str == options[i].flag)
 		{
 			ret += options[i].func(file_info);

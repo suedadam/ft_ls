@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/05 03:35:39 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 14:10:56 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 14:49:18 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 t_timespec	*parse_time(char *str)
 {
-	char **data;
-	t_timespec *new;
+	char		**data;
+	t_timespec	*new;
 
 	new = (t_timespec *)ft_memalloc(sizeof(t_timespec));
 	if (!new)
@@ -31,4 +31,52 @@ t_timespec	*parse_time(char *str)
 	while (*data)
 		free(*data++);
 	return (new);
+}
+
+int			hiddenfile(t_info *file_info, char *str)
+{
+	if (file_info->all)
+		return (0);
+	else if (*str == '.')
+		return (1);
+	else
+		return (0);
+}
+
+int			init(t_filelist **filelist)
+{
+	if (filelist)
+	{
+		*filelist = (t_filelist *)ft_memalloc(sizeof(t_filelist));
+		if (!filelist)
+		{
+			ft_printf("Failed to malloc(filelist) %s\n", strerror(errno));
+			return (0);
+		}
+		return (1);
+	}
+	else
+		return (0);
+}
+
+void		ls_parse_options(char *argv[], int argc, t_info *file_info)
+{
+	int		i;
+
+	i = 1;
+	while (i < argc)
+	{
+		if (*(argv[i]) == '-')
+		{
+			(argv[i])++;
+			itterate_search(file_info, argv[i]);
+		}
+		else
+			break;
+		i++;
+	}
+	if (i < argc)
+		file_info->directory = ft_strdup(argv[i]);
+	else
+		file_info->directory = ft_strdup("./");
 }

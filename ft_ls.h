@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:13:02 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 14:22:18 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 14:57:36 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,11 +67,6 @@ typedef struct	s_filelist {
 }				t_filelist;
 
 /*
-** ft_ls.h
-*/
-t_timespec		*parse_time(char *str);
-
-/*
 ** options.c
 */
 
@@ -95,10 +90,9 @@ char			*build_path(char *base, char *addition);
 /*
 ** ft_ls.c
 */
-char			*make_dir_format(char *str);
-int				hiddenfile(t_info *filelist, char *str);
-void			sort_data(t_filelist **filelist);
-void			fetch_directories(t_filelist *filelist);
+void			printdata(t_filelist *filelist);
+int				ft_ls(t_info *file_info);
+int				itterate_search(t_info *file_info, char *str);
 
 /*
 ** sort.c
@@ -112,5 +106,20 @@ t_filelist		*reverse_sort(t_filelist *filelist);
 ** permissions.c
 */
 char			*mode_parse(mode_t mode);
+
+/*
+** utils.c
+*/
+t_timespec		*parse_time(char *str);
+int				hiddenfile(t_info *file_info, char *str);
+int				init(t_filelist **filelist);
+void			ls_parse_options(char *argv[], int argc, t_info *file_info);
+
+/*
+** directory_handle.c
+*/
+void			make_directory(t_filelist *filelist);
+void			populate_directory(t_filelist *filelist);
+void			fetch_directories(t_filelist *filelist);
 
 #endif

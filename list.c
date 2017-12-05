@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 21:21:05 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 15:48:50 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 15:57:19 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	free_link_data(t_filelist *filelist)
 	filelist->name = NULL;
 }
 
-int		add_stats(t_filelist *filelist, char *dirname)
+int		add_stats(t_filelist *filelist)
 {
 	struct stat	*stbuf;
 	int			size;
@@ -67,7 +67,7 @@ int		copy_info(t_filelist **filelist, t_filelist *current_list,
 	current_list->info = file_info->info;
 	current_list->path = (*filelist)->path;
 	current_list->name = ft_strdup(dir_info->d_name);
-	if (add_stats(current_list, file_info->name) > 0)
+	if (add_stats(current_list) > 0)
 	{
 		if (!hiddenfile(file_info->info, current_list->name))
 			*(current_list->totalblocks) +=

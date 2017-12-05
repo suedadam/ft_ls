@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/28 01:13:02 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/05 15:48:42 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 15:57:11 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int				reverse(t_info *file_info);
 */
 int				add_file(t_filelist **filelist, t_filelist *file_info,
 					struct dirent *dir_info);
-int				add_stats(t_filelist *filelist, char *dirname);
+int				add_stats(t_filelist *filelist);
 void			free_link_data(t_filelist *filelist);
 char			*build_path(char *base, char *addition);
 

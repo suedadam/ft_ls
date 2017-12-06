@@ -6,17 +6,17 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 22:58:00 by asyed             #+#    #+#             */
-/*   Updated: 2017/11/30 14:06:25 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/05 14:43:57 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-#include <sys/stat.h>
 
 /*
-** Shitty swap, I should swap the links themselves. 
+** Shitty swap, I should swap the links themselves.
 */
-void	swap_links(t_filelist *head, t_filelist *first, t_filelist *second)
+
+void		swap_links(t_filelist *head, t_filelist *first, t_filelist *second)
 {
 	t_filelist *tmp;
 
@@ -29,8 +29,16 @@ void	swap_links(t_filelist *head, t_filelist *first, t_filelist *second)
 		second->next = first;
 		first->next = tmp;
 	}
+}
+
+void		sort_data(t_filelist **filelist)
+{
+	if ((*filelist)->info->modtime)
+		*filelist = time_sort(*filelist);
+	else if ((*filelist)->info->reverse)
+		*filelist = reverse_sort(*filelist);
 	else
-		printf("Not found\n");
+		*filelist = alpha_sort(*filelist);
 }
 
 t_filelist	*time_sort(t_filelist *filelist)
@@ -41,7 +49,8 @@ t_filelist	*time_sort(t_filelist *filelist)
 	head->next = filelist;
 	while (filelist && filelist->next)
 	{
-		if (filelist->stbuf->st_mtimespec.tv_nsec > filelist->next->stbuf->st_mtimespec.tv_nsec)
+		if (filelist->stbuf->st_mtimespec.tv_nsec >
+			filelist->next->stbuf->st_mtimespec.tv_nsec)
 		{
 			swap_links(head, filelist, filelist->next);
 			filelist = head->next;
